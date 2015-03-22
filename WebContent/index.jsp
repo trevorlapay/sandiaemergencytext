@@ -7,8 +7,77 @@
 <%@ page import="com.amazonaws.services.s3.model.*" %>
 <%@ page import="com.amazonaws.services.dynamodbv2.*" %>
 <%@ page import="com.amazonaws.services.dynamodbv2.model.*" %>
+<%@ page import="java.util.Properties" %>
+<%@ page import="java.io.InputStream" %>
+<%@ page import="java.io.FileNotFoundException" %>
+
+<%@ page import="java.sql.*" %>
+<%
+  // Read RDS Connection Information from the Environment
+  Properties prop = new Properties();
+  String propFileName = "sets.properties";
+
+  InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+
+  if (inputStream != null) {
+	prop.load(inputStream);
+  } else {
+	throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+  }
+ 
+  String dbName = prop.getProperty("dbname");
+  String userName = prop.getProperty("dbuser");
+  String password = prop.getProperty("dbpassword");
+  String hostname = prop.getProperty("dbhostname");
+  String port = prop.getProperty("dbport");
+  String jdbcUrl = "jdbc:mysql://" + hostname + ":" +
+		    port + "/" + dbName + "?user=" + userName + "&password=" + password;
+		  
+  // Load the JDBC Driver
+  try {
+    System.out.println("Loading driver...");
+    Class.forName("com.mysql.jdbc.Driver");
+    System.out.println("Driver loaded!");
+  } catch (ClassNotFoundException e) {
+    throw new RuntimeException("Cannot find the driver in the classpath!", e);
+  }
+
+  Connection conn = null;
+  Statement setupStatement = null;
+  Statement readStatement = null;
+  ResultSet resultSet = null;
+  String results = "";
+  int numresults = 0;
+  String statement = null;
 
 
+  try {
+	    System.out.println(jdbcUrl);
+    conn = DriverManager.getConnection(jdbcUrl);
+    
+    readStatement = conn.createStatement();
+
+    resultSet = readStatement.executeQuery("SELECT PROVIDER_NAME FROM Providers;");
+
+    resultSet.first();
+    results = resultSet.getString("PROVIDER_NAME");
+    resultSet.next();
+    results += ", " + resultSet.getString("PROVIDER_NAME");
+    
+    resultSet.close();
+    readStatement.close();
+    conn.close();
+
+  } catch (SQLException ex) {
+    // handle any errors
+    System.out.println("SQLException: " + ex.getMessage());
+    System.out.println("SQLState: " + ex.getSQLState());
+    System.out.println("VendorError: " + ex.getErrorCode());
+  } finally {
+       System.out.println("Closing the connection.");
+      if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+  }
+%>
 <%! // Share the client objects across threads to
     // avoid creating new clients for each web request
     private AmazonEC2         ec2;
@@ -70,7 +139,7 @@
 
       <div class="jumbotron">
         <h1>Sandia Emergency Texting System</h1>
-        <p class="lead">Emergency at Sandia? We'll text you.</p>
+        <p class="lead">Emergency at Sandia? We'll text you. <p>Established connection to RDS. Read first two rows: <%= results %></p></p>
         
         <p><input type=tel name="inputTel"  id="inputTel" class="form-control" placeholder="Email address" required="" autofocus=""><input type="submit" class="btn btn-lg btn-success" role="button" value="Request to sign up today"></a></p>
       </div>

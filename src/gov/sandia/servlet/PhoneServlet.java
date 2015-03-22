@@ -55,7 +55,7 @@ public class PhoneServlet extends HttpServlet {
 
 		  if (inputStream != null) {
 			prop.load(inputStream);
-		  } else {
+		  } else { 
 			throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
 		  }
 		  final String password = prop.getProperty("empassword");

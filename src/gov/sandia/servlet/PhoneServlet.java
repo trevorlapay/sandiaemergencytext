@@ -1,7 +1,11 @@
 package gov.sandia.servlet;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+
+
 
 
 
@@ -43,7 +47,18 @@ public class PhoneServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("hell0");
 		System.out.println(request.getParameter("inputTel"));
-		
+		  // Read RDS Connection Information from the Environment
+		  Properties prop = new Properties();
+		  String propFileName = "sets.properties";
+
+		  InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+
+		  if (inputStream != null) {
+			prop.load(inputStream);
+		  } else {
+			throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+		  }
+		  final String password = prop.getProperty("empassword");
 			Properties props = new Properties();
 			props.put("mail.smtp.host", "smtp.gmail.com");
 			props.put("mail.smtp.socketFactory.port", "465");
@@ -55,7 +70,7 @@ public class PhoneServlet extends HttpServlet {
 			Session session = Session.getDefaultInstance(props,
 				new javax.mail.Authenticator() {
 					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication("sandiaemergencytext@gmail.com","loo9K=nugm");
+						return new PasswordAuthentication("sandiaemergencytext@gmail.com", password);
 					}
 				});
 			try {

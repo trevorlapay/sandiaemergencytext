@@ -34,7 +34,7 @@
 		    port + "/" + dbName + "?user=" + userName + "&password=" + password;
 		  
   // Load the JDBC Driver
-  try {
+  try { 
     System.out.println("Loading driver...");
     Class.forName("com.mysql.jdbc.Driver");
     System.out.println("Driver loaded!");

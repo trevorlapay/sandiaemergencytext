@@ -12,72 +12,7 @@
 <%@ page import="java.io.FileNotFoundException" %>
 
 <%@ page import="java.sql.*" %>
-<%
-  // Read RDS Connection Information from the Environment
-  Properties prop = new Properties();
-  String propFileName = "sets.properties";
 
-  InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-
-  if (inputStream != null) {
-	prop.load(inputStream);
-  } else {
-	throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-  }
- 
-  String dbName = prop.getProperty("dbname");
-  String userName = prop.getProperty("dbuser");
-  String password = prop.getProperty("dbpassword");
-  String hostname = prop.getProperty("dbhostname");
-  String port = prop.getProperty("dbport");
-  String jdbcUrl = "jdbc:mysql://" + hostname + ":" +
-		    port + "/" + dbName + "?user=" + userName + "&password=" + password;
-		  
-  // Load the JDBC Driver
-  try { 
-    System.out.println("Loading driver...");
-    Class.forName("com.mysql.jdbc.Driver");
-    System.out.println("Driver loaded!");
-  } catch (ClassNotFoundException e) {
-    throw new RuntimeException("Cannot find the driver in the classpath!", e);
-  }
-
-  Connection conn = null;
-  Statement setupStatement = null;
-  Statement readStatement = null;
-  ResultSet resultSet = null;
-  String results = "";
-  int numresults = 0;
-  String statement = null;
-
-
-  try {
-	    System.out.println(jdbcUrl);
-    conn = DriverManager.getConnection(jdbcUrl);
-    
-    readStatement = conn.createStatement();
-
-    resultSet = readStatement.executeQuery("SELECT PROVIDER_NAME FROM Providers;");
-
-    resultSet.first();
-    results = resultSet.getString("PROVIDER_NAME");
-    resultSet.next();
-    results += ", " + resultSet.getString("PROVIDER_NAME");
-    
-    resultSet.close();
-    readStatement.close();
-    conn.close();
-
-  } catch (SQLException ex) {
-    // handle any errors
-    System.out.println("SQLException: " + ex.getMessage());
-    System.out.println("SQLState: " + ex.getSQLState());
-    System.out.println("VendorError: " + ex.getErrorCode());
-  } finally {
-       System.out.println("Closing the connection.");
-      if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
-  }
-%>
 <%! // Share the client objects across threads to
     // avoid creating new clients for each web request
     private AmazonEC2         ec2;
@@ -122,6 +57,15 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="jquery-2.1.3.min.js"></script>
+<script src="jquery.mask.js"></script>
+<script type="text/javascript">
+$( document ).ready(function() {
+	 $('#inputTel').mask('(000) 000-0000');
+	});
+
+
+</script>
 </head>
  <body>
     <form name="mainForm" action="PhoneServlet">
@@ -134,14 +78,33 @@
             <li role="presentation"><a href="#">Contact</a></li>
           </ul>
         </nav>
-        <h3 class="text-muted">CS 531</h3>
+        <h3 class="text-muted">CS 591</h3>
       </div>
 
       <div class="jumbotron">
         <h1>Sandia Emergency Texting System</h1>
-        <p class="lead">Emergency at Sandia? We'll text you. <p>Established connection to RDS. Read first two rows: <%= results %></p></p>
-        
-        <p><input type=tel name="inputTel"  id="inputTel" class="form-control" placeholder="Email address" required="" autofocus=""><input type="submit" class="btn btn-lg btn-success" role="button" value="Request to sign up today"></a></p>
+        <p class="lead">Emergency at Sandia? We'll text you. </p>
+        <% Boolean success = (Boolean) request.getAttribute("success");
+        if (success != null &&  success) {%>
+        <span class="label label-success">Thank you for submitting your request. You will be notified via text when your request has been processed.</span>
+        <%} %>
+        <p>Select your carrier:
+        <select class="form-control" name="carrier">
+		    <option value="txt.att.net">AT&T</option>
+		    <option value="vtext.com">Verizon</option>
+		    <option value="tmomail.net">T-Mobile</option>
+		    <option value="vmobl.com">Virgin Mobile</option>
+		    <option value="qwestmp.com">Qwest</option>
+		    <option value="messaging.nextel.com">Nextel</option>
+		    <option value="email.uscc.net">U.S. Cellular</option>
+		    <option value="myboostmobile.com">Boost Mobile</option>
+		    <option value="mymetropcs.com">Metro PCS</option>
+		</select>
+        </p>
+
+        <p>Enter a text-capable mobile number: <input type=tel name="inputTel"  size="14" id="inputTel" class="form-control" placeholder="Phone" required="" >
+        <br clear="all">
+        <input type="submit" name="register" class="btn btn-lg btn-success" role="button" value="Request to sign up today">&nbsp;<input type="submit" name="unenroll" class="btn btn-lg btn-danger" role="button" value="Request to unenroll this number"></a></p>
       </div>
 
  
@@ -153,40 +116,5 @@
     </div> <!-- /container -->
     </form>
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>
-<!--  <body>
-    <div id="content" class="container">
-        <div class="section grid grid5 s3">
-            <h2>Amazon S3 Buckets:</h2>
-            <ul>
-            <% for (Bucket bucket : s3.listBuckets()) { %>
-               <li> <%= bucket.getName() %> </li>
-            <% } %>
-            </ul>
-        </div>
-
-        <div class="section grid grid5 sdb">
-            <h2>Amazon DynamoDB Tables:</h2>
-            <ul>
-            <% for (String tableName : dynamo.listTables().getTableNames()) { %>
-               <li> <%= tableName %></li>
-            <% } %>
-            </ul>
-        </div>
-
-        <div class="section grid grid5 gridlast ec2">
-            <h2>Amazon EC2 Instances:</h2>
-            <ul>
-            <% for (Reservation reservation : ec2.describeInstances().getReservations()) { %>
-                <% for (Instance instance : reservation.getInstances()) { %>
-                   <li> <%= instance.getInstanceId() %></li>
-                <% } %>
-            <% } %>
-            </ul>
-        </div>
-    </div>
-</body>
-</html>-->

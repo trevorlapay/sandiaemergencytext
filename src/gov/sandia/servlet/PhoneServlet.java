@@ -12,6 +12,7 @@ import java.util.Properties;
 
 
 
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -20,6 +21,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +47,10 @@ public class PhoneServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("hell0");
-		System.out.println(request.getParameter("inputTel"));
+
+		String inputTel = request.getParameter("inputTel");
+		String carrier = request.getParameter("carrier");
+
 		  // Read RDS Connection Information from the Environment
 		  Properties prop = new Properties();
 		  String propFileName = "sets.properties";
@@ -76,16 +80,21 @@ public class PhoneServlet extends HttpServlet {
 			try {
 	 
 				Message message = new MimeMessage(session);
-				message.setFrom(new InternetAddress("trevor.n.lapay@gmail.com"));
+				message.setFrom(new InternetAddress("sandiaemergencytext@gmail.com"));
 				message.setRecipients(Message.RecipientType.TO,
-					InternetAddress.parse("5053821142@vtext.com"));
-				message.setSubject("Registered");
-				message.setText("You have been registered into the emergency texting system. YAY!");
-	 
+					InternetAddress.parse("sandiaemergencytext@gmail.com"));
+				
+				String action = "ENROLLED INTO";
+				if (request.getParameter("unenroll") != null){
+	                   action = "UNENROLLED FROM";
+				} 
+				message.setSubject("Request to be " + action);
+				String text = "User " + inputTel + " has requested to be " + action + " the emergency texting system using carrier: " + carrier;
+				message.setText(text);
 				Transport.send(message);
-	 
-				System.out.println("Done");
-	 
+			    RequestDispatcher view = request.getRequestDispatcher("index.jsp");
+			    request.setAttribute("success", new Boolean(true));
+				view.forward(request, response);
 			} catch (MessagingException e) {
 				throw new RuntimeException(e);
 			} 

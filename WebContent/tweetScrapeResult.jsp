@@ -78,7 +78,7 @@ $( document ).ready(function() {
             <li role="presentation"><a href="contact.jsp">Contact</a></li>
           </ul>
         </nav>
-        <h3 class="text-muted">CS 591</h3>
+        <h3 class="text-muted">CS 591</h3> 
       </div>
 
       <div class="jumbotron">

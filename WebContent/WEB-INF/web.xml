@@ -19,4 +19,14 @@
     <servlet-name>PhoneServlet</servlet-name>
     <url-pattern>/PhoneServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>TweetScrape</display-name>
+    <servlet-name>TweetScrape</servlet-name>
+    <servlet-class>gov.sandia.servlet.TweetScrape</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TweetScrape</servlet-name>
+    <url-pattern>/TweetScrape</url-pattern>
+  </servlet-mapping>
 </web-app>

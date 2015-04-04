@@ -49,7 +49,7 @@ public class TweetJob implements Job
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		Twitter twitter = tf.getInstance();
 		String alert = "";
-        try { 
+        try {  
         	
 			for (Status status : twitter.getUserTimeline("sandiaemergency")) {
 			    if (status.getText().toUpperCase().contains("EMERGENCY") 

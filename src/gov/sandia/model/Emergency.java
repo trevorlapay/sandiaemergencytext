@@ -91,7 +91,7 @@ public class Emergency {
 				newStatusId = false;
 				break;
 			}
-		}
+		} 
 		return newStatusId;
 	}
 	public String getLastEmergencyId() {

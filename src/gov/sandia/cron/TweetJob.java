@@ -50,7 +50,7 @@ public class TweetJob implements Job
 		Twitter twitter = tf.getInstance();
 		String alert = "";
         try {  
-        	
+        	 
 			for (Status status : twitter.getUserTimeline("sandiaemergency")) {
 			    if (status.getText().toUpperCase().contains("EMERGENCY") 
 			    		&& Emergency.isNewEmergency(status)){

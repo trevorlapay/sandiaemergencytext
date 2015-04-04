@@ -56,7 +56,7 @@ public class PhoneServlet extends HttpServlet {
 		  String propFileName = "sets.properties";
 
 		  InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
-
+ 
 		  if (inputStream != null) {
 			prop.load(inputStream);
 		  } else { 

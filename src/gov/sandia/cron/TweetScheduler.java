@@ -19,7 +19,7 @@ public class TweetScheduler {
 
 		JobDetail job = JobBuilder.newJob(gov.sandia.cron.TweetJob.class)
 			.withIdentity("sandiaTweetJob", "group1").build();
-
+ 
 		Trigger trigger = TriggerBuilder
 			.newTrigger()
 			.withIdentity("sandiaTweetTrigger", "group1")

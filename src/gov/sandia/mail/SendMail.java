@@ -19,7 +19,7 @@ public class SendMail {
 
         final String username = "sandiaemergencytext@gmail.com";
         final String password = "*********";
-
+ 
         Properties props = new Properties();
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.auth", "true");

@@ -82,7 +82,7 @@ public class Emergency {
 	public static boolean isNewEmergency(Status status) throws Exception {
 		if (notInDB(status.getId() + ""))return true;
 		return false;
-		
+		 
 	}
 	public static boolean notInDB(String ID) throws Exception{
 		boolean newStatusId = true;

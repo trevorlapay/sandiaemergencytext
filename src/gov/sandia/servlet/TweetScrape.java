@@ -64,7 +64,7 @@ public class TweetScrape extends HttpServlet {
 			for (Status status : twitter.getUserTimeline("sandiaemergency")) {
 			    if (status.getText().toUpperCase().contains("EMERGENCY")){
 			    	System.out.println(status.getText());
-			    	SendMail.sendMail(status.getText());
+			    	SendMail.sendMail(status.getText(), "sandiaemergencytext@gmail.com");
 			    	alert += status.getText() +  "  ";
 			    	
 			    } else {

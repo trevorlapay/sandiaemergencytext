@@ -15,10 +15,10 @@ import javax.mail.internet.MimeMessage;
 
 public class SendMail {
 
-    public static void sendMail(String text) {
+    public static void sendMail(String text, String recipient) {
 
         final String username = "sandiaemergencytext@gmail.com";
-        final String password = "loo9K=nugm";
+        final String password = "*********";
 
         Properties props = new Properties();
         props.put("mail.smtp.starttls.enable", "true");
@@ -38,7 +38,7 @@ public class SendMail {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("sandiaemergencytext@gmail.com"));
             message.setRecipients(Message.RecipientType.TO,
-                InternetAddress.parse("sandiaemergencytext@gmail.com"));
+                InternetAddress.parse(recipient));
             message.setSubject("Emergency Detected!");
             message.setText(text);
 

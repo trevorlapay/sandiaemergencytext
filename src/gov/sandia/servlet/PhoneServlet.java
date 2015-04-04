@@ -74,7 +74,7 @@ public class PhoneServlet extends HttpServlet {
 			Session session = Session.getDefaultInstance(props,
 				new javax.mail.Authenticator() {
 					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication("sandiaemergencytext@gmail.com", password);
+						return new PasswordAuthentication("dariusforrester555@gmail.com", "apushapeng3");
 					}
 				});
 			try {
